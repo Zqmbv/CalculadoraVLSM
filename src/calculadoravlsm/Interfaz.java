@@ -7,9 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.plaf.basic.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
@@ -29,7 +26,7 @@ class JSubRed {
     }
 }
 
-public class Interfaz extends JFrame implements ActionListener,FocusListener,ChangeListener{
+public class Interfaz extends JFrame implements ActionListener,FocusListener{
     //region Components
     static ArrayList<String> Errores = new ArrayList<>();
     ArrayList<JSubRed> JSubRedes = new ArrayList<>();
@@ -41,19 +38,6 @@ public class Interfaz extends JFrame implements ActionListener,FocusListener,Cha
     Font fText = new Font(nameFont,Font.PLAIN,13);
     Font fTableText = new Font(nameFont,Font.PLAIN,11);
     Font fTableHeader = new Font(nameFont,Font.BOLD,11);
-
-    Color cFrameBackground = new Color(25,25,25);
-    Color cPanelBackground = new Color(45,45,45);
-    Color cSubTitle = new Color(220,220,220);
-    Color cTextFieldBackground = new Color(65,65,65);
-    Color cTextUnfocused = new Color(180,180,180);
-    Color cText = new Color(255,255,255);
-    Color cBotonBackground = new Color(45,45,195);
-    Color cPressedButtonBackground = new Color(15,15,135);
-    Color cPressedEraseBackground = new Color(115,5,5);
-    Color cEraseBackground = new Color(175,25,25);
-    Color cBorder = new Color(160,160,160);
-    Color cScrollPaneBorder = new Color(100,100,100);
 
     GridBagLayout GBL = new GridBagLayout();
     GridBagConstraints GBC = new GridBagConstraints();
@@ -98,10 +82,10 @@ public class Interfaz extends JFrame implements ActionListener,FocusListener,Cha
     //region Constructor
     public Interfaz(){
         // Deben estar activadas las 4 funciones para que la interfaz quede bonita.
-        setPosition();                          // Colocar los componentes con GridLayout.
-        setStyle();                             // Agregarle un tema personalizado.
-        setConfigComponents();                  // Ajustar orientación de componentes y otras funcionalidades.
-        setFont();                              // Agregarle la tipografía.
+        setPosition();                                  // Colocar los componentes con GridLayout.
+        new UIStyle(this);                              // Estilo personalizado.
+        setConfigComponents();                          // Ajustar orientación de componentes y otras funcionalidades.
+        setFont();                                      // Agregarle la tipografía.
 
         // CONFIGURACION FRAME
         setTitle("Calculadora VLSM");
@@ -195,159 +179,6 @@ public class Interfaz extends JFrame implements ActionListener,FocusListener,Cha
         panelOutput.add(spTable, GBC);
     }
 
-    //region Style
-    public void setScrollPaneStyle(JScrollPane JSC){
-        JSC.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
-            @Override
-            protected void configureScrollBarColors() {
-                this.thumbColor = cTextFieldBackground;
-                this.trackColor = cFrameBackground;   
-            }
-            @Override
-            protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(thumbColor);
-                g2.fillRoundRect(thumbBounds.x+2, thumbBounds.y+2, thumbBounds.width-4, thumbBounds.height-4, 0, 0);
-                g2.dispose();
-            }
-            @Override
-            protected JButton createDecreaseButton(int orientation) { return createZeroButton(); }
-            @Override
-            protected JButton createIncreaseButton(int orientation) { return createZeroButton(); }
-            private JButton createZeroButton() {
-                JButton b = new JButton();
-                b.setPreferredSize(new Dimension(0, 0));
-                return b;
-            }
-        });
-        JSC.setBorder(BorderFactory.createLineBorder(cScrollPaneBorder));
-    }
-
-    public void setStyleJSubRed(JSubRed JSR){
-        JSR.lID.setForeground(cSubTitle);
-
-        JSR.bErase.setForeground(cText);
-        JSR.bErase.setBackground(cEraseBackground);
-        JSR.bErase.setBorder(BorderFactory.createEmptyBorder());
-        JSR.bErase.setFocusPainted(false);
-        JSR.bErase.setContentAreaFilled(false); 
-        JSR.bErase.setOpaque(true); 
-        JSR.bErase.addChangeListener(e -> {
-            ButtonModel model = JSR.bErase.getModel();
-            if (model.isPressed()) JSR.bErase.setBackground(cPressedEraseBackground); 
-            else JSR.bErase.setBackground(cEraseBackground);
-        });
-
-        JSR.sbName.setForeground(cText);
-        JSR.sbName.setBorder(BorderFactory.createLineBorder(cBorder));
-        JSR.sbName.setBackground(cTextFieldBackground);
-        JSR.sbName.setCaretColor(cText);
-
-        JSR.sbHost.setForeground(cText);
-        JSR.sbHost.setBorder(BorderFactory.createLineBorder(cBorder));
-        JSR.sbHost.setBackground(cTextFieldBackground);
-        JSR.sbHost.setCaretColor(cText);
-    }
-
-    public void setStyle(){
-        this.setBackground(cBotonBackground);
-        this.getContentPane().setBackground(cFrameBackground);
-
-        splitPane.setUI(new BasicSplitPaneUI() {
-            @Override
-            public BasicSplitPaneDivider createDefaultDivider() {
-                return new BasicSplitPaneDivider(this) {
-                    @Override
-                    public void paint(Graphics g) {
-                        g.setColor(cFrameBackground); g.fillRect(0, 0, getWidth(), getHeight());
-                        g.setColor(cSubTitle); 
-                        g.fillRect(8, getHeight()/3, 1, getHeight()/3);
-                        g.fillRect(4, getHeight()/3, 1, getHeight()/3);
-                    }
-                };
-            }
-        });
-
-        setScrollPaneStyle(spPanelInputCenter);
-        setScrollPaneStyle(spTable);
-
-        JPanel lCorner = new JPanel();
-        lCorner.setBackground(cFrameBackground);
-        spTable.setCorner(JScrollPane.UPPER_RIGHT_CORNER,lCorner);
-
-        tbInput.setTitleColor(cSubTitle);
-        tbOutput.setTitleColor(cSubTitle);
-
-        panelInput.setBackground(cPanelBackground);
-        panelOutput.setBackground(cPanelBackground);
-
-        tfInitialIP.setForeground(cTextUnfocused);
-        tfInitialIP.setBorder(BorderFactory.createLineBorder(cBorder));
-        tfInitialIP.setBackground(cTextFieldBackground);
-        tfInitialIP.setCaretColor(cText);
-
-        lPrefixSymbol.setForeground(cSubTitle);
-
-        tfInitialMask.setForeground(cTextUnfocused);
-        tfInitialMask.setBorder(BorderFactory.createLineBorder(cBorder));
-        tfInitialMask.setBackground(cTextFieldBackground);
-        tfInitialMask.setCaretColor(cText);
-
-        panelInputNorth.setOpaque(false);
-        panelInputCenter.setOpaque(true);
-        panelInputCenter.setBackground(cPanelBackground);
-        panelInputSouth.setOpaque(false);
-
-        jtTable.getTableHeader().setBackground(cFrameBackground);
-        jtTable.getTableHeader().setForeground(cSubTitle); 
-        jtTable.getTableHeader().setBorder(BorderFactory.createLineBorder(cBorder));
-        jtTable.setBackground(cPanelBackground); 
-        jtTable.setForeground(cText); 
-        jtTable.setSelectionBackground(cBotonBackground); 
-        jtTable.setSelectionForeground(cText);
-        jtTable.setShowVerticalLines(false);
-        jtTable.setShowHorizontalLines(true);
-        jtTable.setGridColor(cScrollPaneBorder);
-
-        miImport.setBackground(cPanelBackground);
-        miImport.setForeground(cSubTitle);
-        miImport.setBorder(BorderFactory.createEmptyBorder(4, 5, 4, 5));
-
-        mFile.setForeground(cSubTitle);
-        mFile.setBackground(cFrameBackground);
-        mFile.setOpaque(true);
-        mFile.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
-
-        menuBar.setBackground(cFrameBackground);
-        menuBar.setForeground(cFrameBackground);
-        menuBar.setBorder(BorderFactory.createLineBorder(cBorder, 1));
-
-        bGenerate.setBackground(cBotonBackground);
-        bGenerate.setForeground(cText);
-        bGenerate.setBorder(BorderFactory.createEmptyBorder());
-        bGenerate.setFocusPainted(false);
-        bGenerate.setContentAreaFilled(false); 
-        bGenerate.setOpaque(true); 
-        bGenerate.addChangeListener(this);
-
-        bAdd.setBackground(cBotonBackground);
-        bAdd.setForeground(cText);
-        bAdd.setBorder(BorderFactory.createEmptyBorder());
-        bAdd.setFocusPainted(false);
-        bAdd.setContentAreaFilled(false); 
-        bAdd.setOpaque(true); 
-        bAdd.addChangeListener(this);
-
-        UIManager.put("OptionPane.background", cFrameBackground);
-        UIManager.put("OptionPane.messageForeground",cText);
-        UIManager.put("Button.background",cBotonBackground);
-        UIManager.put("Button.foreground",cText);
-        UIManager.put("Button.focus", new Color(0, 0, 0, 0));           
-        UIManager.put("Button.select", cPressedButtonBackground);                 
-        UIManager.put("Panel.background", cFrameBackground);
-    }
-
     //region Configuration
     public void setConfigComponents(){
         splitPane.setDividerLocation(425); 
@@ -430,7 +261,7 @@ public class Interfaz extends JFrame implements ActionListener,FocusListener,Cha
             GBC.gridx = 3; GBC.gridy = i; GBC.weightx = 0; panelInputCenter.add(currentJSB.bErase,GBC);
             
             // Estilo
-            setStyleJSubRed(currentJSB);
+            UIStyle.setStyleJSubRed(currentJSB);
 
             // ConfigComponent
             currentJSB.lID.setPreferredSize(dimLabelNum);
@@ -479,10 +310,10 @@ public class Interfaz extends JFrame implements ActionListener,FocusListener,Cha
             Errores.clear();
 
             String sIPInicial = tfInitialIP.getText().trim();
-            if (tfInitialIP.getForeground()==cTextUnfocused) sIPInicial = "";
+            if (tfInitialIP.getForeground()==UIStyle.cTextUnfocused) sIPInicial = "";
 
             String sMascaraInicial = tfInitialMask.getText().trim();
-            if (tfInitialMask.getForeground()==cTextUnfocused) sMascaraInicial = "";
+            if (tfInitialMask.getForeground()==UIStyle.cTextUnfocused) sMascaraInicial = "";
 
             VLSM myVLSM = new VLSM(sIPInicial, sMascaraInicial, JSubRedes);
             System.out.println(myVLSM);
@@ -520,8 +351,8 @@ public class Interfaz extends JFrame implements ActionListener,FocusListener,Cha
             String sPath = FD.getDirectory()+sFile;
             try {
                 ArrayList<ArrayList<String>> sVLSM = ManejadorTexto.readFile(sPath);
-                tfInitialIP.setText(sVLSM.get(0).get(0)); tfInitialIP.setForeground(cText);
-                tfInitialMask.setText(sVLSM.get(0).get(1)); tfInitialMask.setForeground(cText);
+                tfInitialIP.setText(sVLSM.get(0).get(0)); tfInitialIP.setForeground(UIStyle.cText);
+                tfInitialMask.setText(sVLSM.get(0).get(1)); tfInitialMask.setForeground(UIStyle.cText);
                 panelInputCenter.removeAll(); JSubRedes.clear();
                 for(ArrayList<String> sSubRed: sVLSM) JSubRedes.add(new JSubRed(sSubRed.get(0), sSubRed.get(1)));
                 updatePanelJSB();
@@ -547,11 +378,11 @@ public class Interfaz extends JFrame implements ActionListener,FocusListener,Cha
     public void focusGained(FocusEvent fe) {
         if(fe.getComponent()==tfInitialIP && tfInitialIP.getText().equals(defaultInformation[0])){
             tfInitialIP.setText("");
-            tfInitialIP.setForeground(cText);
+            tfInitialIP.setForeground(UIStyle.cText);
         }
         if(fe.getComponent()==tfInitialMask && tfInitialMask.getText().equals(defaultInformation[1])){
             tfInitialMask.setText("");
-            tfInitialMask.setForeground(cText);
+            tfInitialMask.setForeground(UIStyle.cText);
         }
     }
 
@@ -559,25 +390,12 @@ public class Interfaz extends JFrame implements ActionListener,FocusListener,Cha
     public void focusLost(FocusEvent fe) {
         if(fe.getComponent()==tfInitialIP && tfInitialIP.getText().equals("")){
             tfInitialIP.setText(defaultInformation[0]);
-            tfInitialIP.setForeground(cTextUnfocused);
+            tfInitialIP.setForeground(UIStyle.cTextUnfocused);
         }
         if(fe.getComponent()==tfInitialMask && tfInitialMask.getText().equals("")){
             tfInitialMask.setText(defaultInformation[1]);
-            tfInitialMask.setForeground(cTextUnfocused);
+            tfInitialMask.setForeground(UIStyle.cTextUnfocused);
         }
     }
 
-    @Override
-    public void stateChanged(ChangeEvent ce) {
-        if(ce.getSource()==bAdd){
-            ButtonModel model = bAdd.getModel();
-            if (model.isPressed()) bAdd.setBackground(cPressedButtonBackground); 
-            else bAdd.setBackground(cBotonBackground);
-        }
-        if(ce.getSource()==bGenerate){
-            ButtonModel model = bGenerate.getModel();
-            if (model.isPressed()) bGenerate.setBackground(cPressedButtonBackground); 
-            else bGenerate.setBackground(cBotonBackground);
-        }
-    }
 }

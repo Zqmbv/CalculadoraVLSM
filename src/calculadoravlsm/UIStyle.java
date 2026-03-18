@@ -26,8 +26,7 @@ public class UIStyle implements ChangeListener{
     //region Style - UI
     public UIStyle(Interfaz UI){
         this.UI = UI;
-        UI.setBackground(cBotonBackground);
-        UI.getContentPane().setBackground(cFrameBackground);
+        UI.master.getContentPane().setBackground(cFrameBackground);
 
         UI.splitPane.setUI(new BasicSplitPaneUI() {
             @Override
@@ -43,37 +42,33 @@ public class UIStyle implements ChangeListener{
                 };
             }
         });
-
-        setScrollPaneStyle(UI.spPanelInputCenter);
-        setScrollPaneStyle(UI.spTable);
-
+        
         JPanel lCorner = new JPanel();
         lCorner.setBackground(cFrameBackground);
         UI.spTable.setCorner(JScrollPane.UPPER_RIGHT_CORNER,lCorner);
-
+        
         UI.tbInput.setTitleColor(cSubTitle);
         UI.tbOutput.setTitleColor(cSubTitle);
-
+        
         UI.panelInput.setBackground(cPanelBackground);
         UI.panelOutput.setBackground(cPanelBackground);
-
-        UI.tfInitialIP.setForeground(cTextUnfocused);
-        UI.tfInitialIP.setBorder(BorderFactory.createLineBorder(cBorder));
-        UI.tfInitialIP.setBackground(cTextFieldBackground);
-        UI.tfInitialIP.setCaretColor(cText);
-
-        UI.lPrefixSymbol.setForeground(cSubTitle);
-
-        UI.tfInitialMask.setForeground(cTextUnfocused);
-        UI.tfInitialMask.setBorder(BorderFactory.createLineBorder(cBorder));
-        UI.tfInitialMask.setBackground(cTextFieldBackground);
-        UI.tfInitialMask.setCaretColor(cText);
 
         UI.panelInputNorth.setOpaque(false);
         UI.panelInputCenter.setOpaque(true);
         UI.panelInputCenter.setBackground(cPanelBackground);
         UI.panelInputSouth.setOpaque(false);
 
+        UI.lPrefixSymbol.setForeground(cSubTitle);
+        
+        setScrollPaneStyle(UI.spPanelInputCenter, cTextFieldBackground,cFrameBackground);
+        setScrollPaneStyle(UI.spTable, cTextFieldBackground,cFrameBackground);
+
+        setTextFieldStyle(UI.tfInitialIP,cTextUnfocused,cBorder,cTextFieldBackground,cText);
+        setTextFieldStyle(UI.tfInitialMask,cTextUnfocused,cBorder,cTextFieldBackground,cText);
+
+        setButtonStyle(UI.bGenerate,cText,cBotonBackground,null,false,false,true,this);
+        setButtonStyle(UI.bAdd,cText,cBotonBackground,null,false,false,true,this);
+        
         UI.jtTable.getTableHeader().setBackground(cFrameBackground);
         UI.jtTable.getTableHeader().setForeground(cSubTitle); 
         UI.jtTable.getTableHeader().setBorder(BorderFactory.createLineBorder(cBorder));
@@ -98,22 +93,6 @@ public class UIStyle implements ChangeListener{
         UI.menuBar.setForeground(cFrameBackground);
         UI.menuBar.setBorder(BorderFactory.createLineBorder(cBorder, 1));
 
-        UI.bGenerate.setBackground(cBotonBackground);
-        UI.bGenerate.setForeground(cText);
-        UI.bGenerate.setBorder(BorderFactory.createEmptyBorder());
-        UI.bGenerate.setFocusPainted(false);
-        UI.bGenerate.setContentAreaFilled(false); 
-        UI.bGenerate.setOpaque(true); 
-        UI.bGenerate.addChangeListener(this);
-
-        UI.bAdd.setBackground(cBotonBackground);
-        UI.bAdd.setForeground(cText);
-        UI.bAdd.setBorder(BorderFactory.createEmptyBorder());
-        UI.bAdd.setFocusPainted(false);
-        UI.bAdd.setContentAreaFilled(false); 
-        UI.bAdd.setOpaque(true); 
-        UI.bAdd.addChangeListener(this);
-
         UIManager.put("OptionPane.background", cFrameBackground);
         UIManager.put("OptionPane.messageForeground",cText);
         UIManager.put("Button.background",cBotonBackground);
@@ -124,12 +103,12 @@ public class UIStyle implements ChangeListener{
     }
 
     //region Style - JScrollPane
-    public void setScrollPaneStyle(JScrollPane JSC){
-        JSC.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+    public void setScrollPaneStyle(JScrollPane JSP, Color ThumbColor, Color TrackColor){
+        JSP.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
             @Override
             protected void configureScrollBarColors() {
-                this.thumbColor = cTextFieldBackground;
-                this.trackColor = cFrameBackground;   
+                this.thumbColor = ThumbColor;
+                this.trackColor = TrackColor;   
             }
             @Override
             protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
@@ -149,48 +128,55 @@ public class UIStyle implements ChangeListener{
                 return b;
             }
         });
-        JSC.setBorder(BorderFactory.createLineBorder(cScrollPaneBorder));
+        JSP.setBorder(BorderFactory.createLineBorder(cScrollPaneBorder));
+    }
+
+    //region Style - JTextField
+    public static void setTextFieldStyle(JTextField JFT, Color Foreground, Color Border, Color Background, Color Caret){
+        JFT.setForeground(Foreground);
+        JFT.setBorder(BorderFactory.createLineBorder(Border));
+        JFT.setBackground(Background);
+        JFT.setCaretColor(Caret);
+    }
+    
+    // region Style - JButton
+    public static void setButtonStyle(JButton JB, Color Foreground, Color Background, Color Border, Boolean FocusPainted, Boolean ContentAreaFilled, Boolean Opaque, ChangeListener CL){
+        JB.setForeground(Foreground);
+        JB.setBackground(Background);
+        if (Border==null) JB.setBorder(BorderFactory.createEmptyBorder());
+        else JB.setBorder(BorderFactory.createLineBorder(Border));
+        JB.setFocusPainted(FocusPainted);
+        JB.setContentAreaFilled(ContentAreaFilled); 
+        JB.setOpaque(Opaque); 
+        JB.addChangeListener(CL);
     }
 
     //region Style - JSubRed
     public static void setStyleJSubRed(JSubRed JSR){
-        JSR.lID.setForeground(cSubTitle);
-
-        JSR.bErase.setForeground(cText);
-        JSR.bErase.setBackground(cEraseBackground);
-        JSR.bErase.setBorder(BorderFactory.createEmptyBorder());
-        JSR.bErase.setFocusPainted(false);
-        JSR.bErase.setContentAreaFilled(false); 
-        JSR.bErase.setOpaque(true); 
+        setTextFieldStyle(JSR.sbName,cText,cBorder,cTextFieldBackground,cText);
+        setTextFieldStyle(JSR.sbHost,cText,cBorder,cTextFieldBackground,cText);
+        setButtonStyle(JSR.bErase,cText,cEraseBackground,null,false,false,true,null);
         JSR.bErase.addChangeListener(e -> {
             ButtonModel model = JSR.bErase.getModel();
             if (model.isPressed()) JSR.bErase.setBackground(cPressedEraseBackground); 
             else JSR.bErase.setBackground(cEraseBackground);
         });
-
-        JSR.sbName.setForeground(cText);
-        JSR.sbName.setBorder(BorderFactory.createLineBorder(cBorder));
-        JSR.sbName.setBackground(cTextFieldBackground);
-        JSR.sbName.setCaretColor(cText);
-
-        JSR.sbHost.setForeground(cText);
-        JSR.sbHost.setBorder(BorderFactory.createLineBorder(cBorder));
-        JSR.sbHost.setBackground(cTextFieldBackground);
-        JSR.sbHost.setCaretColor(cText);
     }
 
-    // region Style - JButton
+
+    public void setButtonPressedStyle(JButton JB,Color normalBackground, Color pressedBackground){
+        ButtonModel model = JB.getModel();
+        if (model.isPressed()) JB.setBackground(pressedBackground); 
+        else JB.setBackground(normalBackground);
+    }
+
     @Override
     public void stateChanged(ChangeEvent ce) {
-        if(ce.getSource()== UI.bAdd){
-            ButtonModel model = UI.bAdd.getModel();
-            if (model.isPressed()) UI.bAdd.setBackground(UIStyle.cPressedButtonBackground); 
-            else UI.bAdd.setBackground(UIStyle.cBotonBackground);
+        if(ce.getSource()==UI.bAdd){
+            setButtonPressedStyle(UI.bAdd,cBotonBackground,cPressedButtonBackground);
         }
-        if(ce.getSource()== UI.bGenerate){
-            ButtonModel model = UI.bGenerate.getModel();
-            if (model.isPressed()) UI.bGenerate.setBackground(UIStyle.cPressedButtonBackground); 
-            else UI.bGenerate.setBackground(UIStyle.cBotonBackground);
+        if(ce.getSource()==UI.bGenerate){
+            setButtonPressedStyle(UI.bGenerate,cBotonBackground,cPressedButtonBackground);
         }
     }
 }

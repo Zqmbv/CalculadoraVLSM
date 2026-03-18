@@ -1,2 +1,0 @@
-calculadoravlsm.JSubRed
-calculadoravlsm.Interfaz

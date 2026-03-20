@@ -1,8 +1,9 @@
-package calculadoravlsm;
+package FrontEnd;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import javax.swing.JTextField;
+import BackEnd.Subnet;
 
 public class UIVerificator {
     static final int MAX_NAME_SUBNET_LENGTH = 32;

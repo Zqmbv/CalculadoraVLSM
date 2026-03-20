@@ -1,4 +1,4 @@
-package calculadoravlsm;
+package FrontEnd;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.*;
+import BackEnd.*;
 
 //region Class JSubnet
 class JSubnet { // Agrupar los JComponentes para cada Subred en el panel

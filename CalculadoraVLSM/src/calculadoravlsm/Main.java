@@ -2,6 +2,7 @@ package calculadoravlsm;
 
 import java.io.IOException;
 import javax.swing.JFrame;
+import FrontEnd.UIGeneral;
 
 public class Main{
 

@@ -1,6 +1,6 @@
 package calculadoravlsm;
 
-public class Subred {
+public class Subnet {
     private String nombre;
     private int host;
     private int exponente;
@@ -14,7 +14,7 @@ public class Subred {
     private int[] ultimaUtil;
     private int[] broadcast;
 
-    public Subred(String nombre, int host){
+    public Subnet(String nombre, int host){
         this.nombre = nombre;
         this.host = host;
         this.exponente = getExponente(this.host);
@@ -95,7 +95,7 @@ public class Subred {
     }
 
     public String toString(){
-        return String.format("| %-20s | %10d | %10d | %2d | %-15s | %-16s | %-15s | %-15s | %-15s | %-15s |",
+        return String.format("| %-32s | %10d | %10d | %2d | %-15s | %-16s | %-15s | %-15s | %-15s | %-15s |",
         this.nombre,
         this.host,
         this.asignado,

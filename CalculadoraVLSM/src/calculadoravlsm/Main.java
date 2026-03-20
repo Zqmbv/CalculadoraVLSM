@@ -7,7 +7,7 @@ public class Main{
 
     public static void main(String[] args) throws IOException {
         JFrame frame = new JFrame("Calculadora VLSM");
-        new Interfaz(frame);
+        new UIGeneral(frame);
 
         // CONFIGURACION FRAME
         frame.setSize(1450,800);

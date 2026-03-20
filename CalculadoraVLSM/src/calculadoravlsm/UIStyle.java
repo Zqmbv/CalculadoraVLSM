@@ -2,6 +2,7 @@ package calculadoravlsm;
 
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.*;
@@ -9,7 +10,7 @@ import javax.swing.plaf.basic.*;
 public class UIStyle implements ChangeListener{
 
     //region Attributes
-    Interfaz UI;
+    UIGeneral UI;
     static final Color cTextUnfocused = new Color(180,180,180);
     static final Color cText = new Color(255,255,255);
     static final Color cFrameBackground = new Color(25,25,25);
@@ -22,9 +23,17 @@ public class UIStyle implements ChangeListener{
     static final Color cEraseBackground = new Color(175,25,25);
     static final Color cBorder = new Color(160,160,160);
     static final Color cScrollPaneBorder = new Color(100,100,100);
+    static final Color cError = new Color(200,25,25);
 
-    //region Style - UI
-    public UIStyle(Interfaz UI){
+    static final String nameFont = "Sans Serif";
+    static final Font fPanelTitle = new Font(nameFont,Font.BOLD,16);
+    static final Font fSubTitle = new Font(nameFont,Font.BOLD,12);
+    static final Font fText = new Font(nameFont,Font.PLAIN,13);
+    static final Font fTableText = new Font(nameFont,Font.PLAIN,11);
+    static final Font fTableHeader = new Font(nameFont,Font.BOLD,11);
+
+    //region General
+    public UIStyle(UIGeneral UI){
         this.UI = UI;
         UI.master.getContentPane().setBackground(cFrameBackground);
 
@@ -49,25 +58,23 @@ public class UIStyle implements ChangeListener{
         
         UI.tbInput.setTitleColor(cSubTitle);
         UI.tbOutput.setTitleColor(cSubTitle);
-        
-        UI.panelInput.setBackground(cPanelBackground);
-        UI.panelOutput.setBackground(cPanelBackground);
-
-        UI.panelInputNorth.setOpaque(false);
-        UI.panelInputCenter.setOpaque(true);
-        UI.panelInputCenter.setBackground(cPanelBackground);
-        UI.panelInputSouth.setOpaque(false);
 
         UI.lPrefixSymbol.setForeground(cSubTitle);
         
+        setPanelStyle(UI.panelInput,cPanelBackground,true);
+        setPanelStyle(UI.panelOutput,cPanelBackground,true);
+        setPanelStyle(UI.panelInputNorth,cPanelBackground,false);
+        setPanelStyle(UI.panelInputCenter,cPanelBackground,true);
+        setPanelStyle(UI.panelInputSouth,cPanelBackground,false);
+
         setScrollPaneStyle(UI.spPanelInputCenter, cTextFieldBackground,cFrameBackground);
         setScrollPaneStyle(UI.spTable, cTextFieldBackground,cFrameBackground);
 
-        setTextFieldStyle(UI.tfInitialIP,cTextUnfocused,cBorder,cTextFieldBackground,cText);
-        setTextFieldStyle(UI.tfInitialMask,cTextUnfocused,cBorder,cTextFieldBackground,cText);
+        setTextFieldStyle(UI.tfInitialIP,cTextUnfocused,cBorder,cTextFieldBackground,cText,fText);
+        setTextFieldStyle(UI.tfInitialMask,cTextUnfocused,cBorder,cTextFieldBackground,cText,fText);
 
-        setButtonStyle(UI.bGenerate,cText,cBotonBackground,null,false,false,true,this);
-        setButtonStyle(UI.bAdd,cText,cBotonBackground,null,false,false,true,this);
+        setButtonStyle(UI.bGenerate,cText,cBotonBackground,null,false,false,true,fSubTitle,this);
+        setButtonStyle(UI.bAdd,cText,cBotonBackground,null,false,false,true,fSubTitle,this);
         
         UI.jtTable.getTableHeader().setBackground(cFrameBackground);
         UI.jtTable.getTableHeader().setForeground(cSubTitle); 
@@ -80,18 +87,9 @@ public class UIStyle implements ChangeListener{
         UI.jtTable.setShowHorizontalLines(true);
         UI.jtTable.setGridColor(cScrollPaneBorder);
 
-        UI.miImport.setBackground(cPanelBackground);
-        UI.miImport.setForeground(cSubTitle);
-        UI.miImport.setBorder(BorderFactory.createEmptyBorder(4, 5, 4, 5));
-
-        UI.mFile.setForeground(cSubTitle);
-        UI.mFile.setBackground(cFrameBackground);
-        UI.mFile.setOpaque(true);
-        UI.mFile.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
-
-        UI.menuBar.setBackground(cFrameBackground);
-        UI.menuBar.setForeground(cFrameBackground);
-        UI.menuBar.setBorder(BorderFactory.createLineBorder(cBorder, 1));
+        setComponentStyle(UI.miImport,cSubTitle,cPanelBackground,true,BorderFactory.createEmptyBorder(4, 5, 4, 5));
+        setComponentStyle(UI.mFile,cSubTitle,cPanelBackground,false,BorderFactory.createEmptyBorder(4, 8, 4, 8));
+        setComponentStyle(UI.menuBar,cFrameBackground,cFrameBackground,true,BorderFactory.createLineBorder(cBorder, 1));
 
         UIManager.put("OptionPane.background", cFrameBackground);
         UIManager.put("OptionPane.messageForeground",cText);
@@ -100,9 +98,39 @@ public class UIStyle implements ChangeListener{
         UIManager.put("Button.focus", new Color(0, 0, 0, 0));           
         UIManager.put("Button.select", cPressedButtonBackground);                 
         UIManager.put("Panel.background", cFrameBackground);
+
+        setFont();
     }
 
-    //region Style - JScrollPane
+    //region Font
+    public void setFont(){
+        UI.lPrefixSymbol.setFont(fSubTitle);
+
+        UI.tbInput.setTitleFont(fPanelTitle);
+        UI.tbOutput.setTitleFont(fPanelTitle);
+
+        UI.jtTable.getTableHeader().setFont(fTableHeader);
+        UI.jtTable.setFont(fTableText);
+        
+        UIManager.put("Button.font",fSubTitle);
+        UIManager.put("OptionPane.messageFont",fText);
+    }
+
+    //region JMenu/item/uBar
+    public void setComponentStyle(JComponent JC, Color Foreground, Color Background ,Boolean Opaque, Border BF){
+        JC.setForeground(Foreground);
+        JC.setBackground(Background);
+        JC.setBorder(BF);
+        JC.setOpaque(Opaque); 
+    }
+
+    //region JPanel
+    public void setPanelStyle(JPanel JP, Color Background, Boolean Opaque){
+        JP.setBackground(Background);
+        JP.setOpaque(Opaque);
+    }
+
+    //region JScrollPane
     public void setScrollPaneStyle(JScrollPane JSP, Color ThumbColor, Color TrackColor){
         JSP.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
             @Override
@@ -131,16 +159,17 @@ public class UIStyle implements ChangeListener{
         JSP.setBorder(BorderFactory.createLineBorder(cScrollPaneBorder));
     }
 
-    //region Style - JTextField
-    public static void setTextFieldStyle(JTextField JFT, Color Foreground, Color Border, Color Background, Color Caret){
-        JFT.setForeground(Foreground);
-        JFT.setBorder(BorderFactory.createLineBorder(Border));
-        JFT.setBackground(Background);
-        JFT.setCaretColor(Caret);
+    //region JTextField
+    public static void setTextFieldStyle(JTextField JTF, Color Foreground, Color Border, Color Background, Color Caret, Font Font){
+        JTF.setForeground(Foreground);
+        JTF.setBorder(BorderFactory.createLineBorder(Border));
+        JTF.setBackground(Background);
+        JTF.setCaretColor(Caret);
+        JTF.setFont(Font);
     }
-    
-    // region Style - JButton
-    public static void setButtonStyle(JButton JB, Color Foreground, Color Background, Color Border, Boolean FocusPainted, Boolean ContentAreaFilled, Boolean Opaque, ChangeListener CL){
+
+    // region JButton
+    public static void setButtonStyle(JButton JB, Color Foreground, Color Background, Color Border, Boolean FocusPainted, Boolean ContentAreaFilled, Boolean Opaque, Font Font, ChangeListener CL){
         JB.setForeground(Foreground);
         JB.setBackground(Background);
         if (Border==null) JB.setBorder(BorderFactory.createEmptyBorder());
@@ -148,26 +177,26 @@ public class UIStyle implements ChangeListener{
         JB.setFocusPainted(FocusPainted);
         JB.setContentAreaFilled(ContentAreaFilled); 
         JB.setOpaque(Opaque); 
+        JB.setFont(Font);
         JB.addChangeListener(CL);
     }
-
-    //region Style - JSubRed
-    public static void setStyleJSubRed(JSubRed JSR){
-        setTextFieldStyle(JSR.sbName,cText,cBorder,cTextFieldBackground,cText);
-        setTextFieldStyle(JSR.sbHost,cText,cBorder,cTextFieldBackground,cText);
-        setButtonStyle(JSR.bErase,cText,cEraseBackground,null,false,false,true,null);
-        JSR.bErase.addChangeListener(e -> {
-            ButtonModel model = JSR.bErase.getModel();
-            if (model.isPressed()) JSR.bErase.setBackground(cPressedEraseBackground); 
-            else JSR.bErase.setBackground(cEraseBackground);
-        });
-    }
-
 
     public void setButtonPressedStyle(JButton JB,Color normalBackground, Color pressedBackground){
         ButtonModel model = JB.getModel();
         if (model.isPressed()) JB.setBackground(pressedBackground); 
         else JB.setBackground(normalBackground);
+    }
+
+    //region JSubnet
+    public static void setStyleJSubRed(JSubnet JSR){
+        setTextFieldStyle(JSR.sbName,cText,cBorder,cTextFieldBackground,cText,fText);
+        setTextFieldStyle(JSR.sbHost,cText,cBorder,cTextFieldBackground,cText,fText);
+        setButtonStyle(JSR.bErase,cText,cEraseBackground,null,false,false,true,fSubTitle,null);
+        JSR.bErase.addChangeListener(e -> {
+            ButtonModel model = JSR.bErase.getModel();
+            if (model.isPressed()) JSR.bErase.setBackground(cPressedEraseBackground); 
+            else JSR.bErase.setBackground(cEraseBackground);
+        });
     }
 
     @Override

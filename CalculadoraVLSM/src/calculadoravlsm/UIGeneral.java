@@ -1,4 +1,3 @@
-
 package calculadoravlsm;
 
 import java.awt.*;
@@ -7,37 +6,27 @@ import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumnModel;
+import javax.swing.table.*;
 
-//region Class JSubRed
-// Agrupar los JComponentes para cada Subred en el panel
-class JSubRed {
+//region Class JSubnet
+class JSubnet { // Agrupar los JComponentes para cada Subred en el panel
     public JTextField sbName;
     public JTextField sbHost;
     public JButton bErase;
 
-    public JSubRed(String sbName, String sbHost){
+    public JSubnet(String sbName, String sbHost){
         this.sbName = new JTextField(sbName);
         this.sbHost = new JTextField(sbHost);
         this.bErase = new JButton("X");
     }
 }
 
-public class Interfaz implements ActionListener,FocusListener{
+public class UIGeneral implements ActionListener,FocusListener{
     //region Components
     JFrame master;
 
-    static ArrayList<String> Errores = new ArrayList<>();
-    ArrayList<JSubRed> JSubRedes = new ArrayList<>();
-
-    String nameFont = "Sans Serif";
-
-    Font fPanelTitle = new Font(nameFont,Font.BOLD,16);
-    Font fSubTitle = new Font(nameFont,Font.BOLD,12);
-    Font fText = new Font(nameFont,Font.PLAIN,13);
-    Font fTableText = new Font(nameFont,Font.PLAIN,11);
-    Font fTableHeader = new Font(nameFont,Font.BOLD,11);
+    static ArrayList<String> errorMessages = new ArrayList<>();
+    ArrayList<JSubnet> JSubnets = new ArrayList<>();
 
     GridBagLayout GBL = new GridBagLayout();
     GridBagConstraints GBC = new GridBagConstraints();
@@ -55,6 +44,7 @@ public class Interfaz implements ActionListener,FocusListener{
     JScrollPane spPanelInputCenter = new JScrollPane(panelInputCenter);
 
     JLabel lPrefixSymbol = new JLabel("/");
+    JLabel lUser = new JLabel("By Mauro 2026");
 
     JButton bAdd = new JButton("AGREGAR SUBRED");
     JButton bGenerate = new JButton("GENERAR");
@@ -62,8 +52,8 @@ public class Interfaz implements ActionListener,FocusListener{
     String sColumns[] = {"SUB RED","HOST","ASIGNADO","/","MÁSCARA","WILDCARD","DIRECCIÓN RED","PRIMERA ÚTIL","ÚLTIMA ÚTIL","BROADCAST"};
     String defaultInformation[] = {"IP Inicial (ej: 192.168.0.0) . . .", "Máscara Inicial (ej: 16) . . ."};
 
-    DefaultTableModel dtmModel = new DefaultTableModel(sColumns, 0);
-    JTable jtTable = new JTable(dtmModel);
+    DefaultTableModel DTM = new DefaultTableModel(sColumns, 0);
+    JTable jtTable = new JTable(DTM);
     JScrollPane spTable = new JScrollPane(jtTable);
 
     JTextField tfInitialIP = new JTextField(defaultInformation[0]);
@@ -80,14 +70,12 @@ public class Interfaz implements ActionListener,FocusListener{
     JMenuItem miExport = new JMenuItem("Exportar Cálculo");
 
     //region Constructor
-    public Interfaz(JFrame frame){
+    public UIGeneral(JFrame frame){
         this.master = frame;
-
-        // Deben estar activadas las 4 funciones para que la interfaz quede bonita.
+        
+        new UIStyle(this); // set Color & Font                          
         setPosition();                                  
-        new UIStyle(this);                              
-        setConfigComponents();                          
-        setFont();                                      
+        setConfigComponents();                                                        
     }
 
     //region Position
@@ -109,6 +97,10 @@ public class Interfaz implements ActionListener,FocusListener{
         GBC.weightx = 0; GBC.weighty = 0;
         GBC.insets = new Insets(0, 0, 0, 0);
         GBC.gridx = 0; GBC.gridy = 0; GBC.gridwidth = 2; this.master.add(menuBar, GBC);
+
+        GBC.insets = new Insets(0, 20, 2,10);
+        GBC.weightx = 0; GBC.weighty = 0;
+        GBC.gridx = 0; GBC.gridy = 1; GBC.gridwidth = 1; this.master.add(lUser, GBC);
 
         // PANEL INPUT 
         panelInput.setLayout(GBL);
@@ -176,6 +168,9 @@ public class Interfaz implements ActionListener,FocusListener{
 
     //region Configuration
     public void setConfigComponents(){
+        lUser.setVerticalAlignment(JLabel.BOTTOM);
+        lUser.setHorizontalAlignment(JLabel.RIGHT);
+
         splitPane.setDividerLocation(425); 
         splitPane.setContinuousLayout(true); 
         splitPane.setDividerSize(12); 
@@ -216,36 +211,13 @@ public class Interfaz implements ActionListener,FocusListener{
         tfInitialMask.addFocusListener(this);
     }
 
-    //region Tipography
-    public void setFont(){
-        lPrefixSymbol.setFont(fSubTitle);
-
-        tbInput.setTitleFont(fPanelTitle);
-        tbOutput.setTitleFont(fPanelTitle);
-
-        jtTable.getTableHeader().setFont(fTableHeader);
-        jtTable.setFont(fTableText);
-
-        tfInitialIP.setFont(fText);
-        tfInitialMask.setFont(fText);
-
-        bAdd.setFont(fSubTitle);
-        bGenerate.setFont(fSubTitle);
-        
-        UIManager.put("Button.font",fSubTitle);
-        UIManager.put("OptionPane.messageFont",fText);
-    }
-
     //region Functions
     public void updatePanelJSB(){
         panelInputCenter.removeAll();
-        for(int i=0; i<JSubRedes.size(); i++){
-            JSubRed currentJSB = JSubRedes.get(i);
-            currentJSB.sbName.setText("Subred "+(i+1)+"");
+        for(int i=0; i<JSubnets.size(); i++){
+            JSubnet currentJSB = JSubnets.get(i);
 
-            // Posicion
-            if(i==0) GBC.insets = new Insets(10, 10, 5, 5);
-            else GBC.insets = new Insets(5, 10, 5, 10);
+            // Position
             GBC.fill = GridBagConstraints.HORIZONTAL; GBC.anchor = GridBagConstraints.CENTER;
             GBC.gridwidth = 1; GBC.gridheight = 1;
             GBC.ipadx = 0; GBC.ipady = 8; GBC.weighty = 0;
@@ -256,8 +228,10 @@ public class Interfaz implements ActionListener,FocusListener{
             
             GBC.insets = new Insets(top, 10, 5, 5);
             GBC.gridx = 0; GBC.gridy = i; GBC.weightx = 1; panelInputCenter.add(currentJSB.sbName,GBC);
+
             GBC.insets = new Insets(top, 5, 5, 5);
             GBC.gridx = 1; GBC.gridy = i; GBC.weightx = 0; panelInputCenter.add(currentJSB.sbHost,GBC);
+            
             GBC.insets = new Insets(top, 5, 5, 10);
             GBC.gridx = 2; GBC.gridy = i; GBC.weightx = 0; panelInputCenter.add(currentJSB.bErase,GBC);
 
@@ -272,11 +246,9 @@ public class Interfaz implements ActionListener,FocusListener{
             
             currentJSB.bErase.setPreferredSize(dimErase);
             currentJSB.bErase.addActionListener(this);
-
-            // Tipografia
-            currentJSB.sbName.setFont(fText);
-            currentJSB.bErase.setFont(fSubTitle);
         }
+        
+        // PARA QUE LOS JSUBNETS SE MANTENGAN PEGADOS EN EL NORTE DEL PANEL
         GBC.weightx = 1; GBC.weighty = 1; 
         GBC.gridwidth = 3;
         GBC.gridx = 0; GBC.gridy = 999; panelInputCenter.add(new JLabel(""), GBC); 
@@ -285,88 +257,79 @@ public class Interfaz implements ActionListener,FocusListener{
         panelInputCenter.repaint();
     }
 
+    public void removeJSubnet(ActionEvent ae){
+        for (int i=0; i<JSubnets.size(); i++) {
+            if (ae.getSource() == JSubnets.get(i).bErase) {
+                JSubnets.remove(i); 
+                updatePanelJSB();
+            }
+        }
+    }
+
+    public void addJSubnet(String sbName, String sbHost){
+        JSubnets.add(new JSubnet(sbName,sbHost));
+        updatePanelJSB();
+    }
+
+    public void generateVLSM(){
+        errorMessages.clear();
+
+        int initialIP[] = UIVerificator.getInitialIP(tfInitialIP);
+        int initialMask = UIVerificator.getInitialMask(tfInitialMask);
+        ArrayList<Subnet> subnets = UIVerificator.getSubnets(JSubnets);
+
+        if(errorMessages.size()!=0){
+            JOptionPane.showMessageDialog(this.master,errorMessages.get(0),"ERROR",JOptionPane.ERROR_MESSAGE);
+            DTM.setRowCount(0);
+            return;
+        }
+
+        VLSM myVLSM = new VLSM(initialIP, initialMask, subnets);
+        System.out.println(myVLSM);
+
+        DTM.setRowCount(0);
+        for(int i=0; i<myVLSM.getSubredes().size(); i++) DTM.addRow(myVLSM.getSubredes().get(i).toStringTable());
+        JOptionPane.showMessageDialog(this.master,"VLSM realizado correctamente.","ÉXITO",JOptionPane.INFORMATION_MESSAGE);
+
+        panelOutput.revalidate();
+        panelOutput.repaint();
+    }
+
+    public void importConfig(){
+        FileDialog FD = new FileDialog(this.master, "Abrir Configuración VLSM", FileDialog.LOAD);
+        FD.setFile("*.txt;*.csv"); // Filtrar archivos TXT o CSV
+        FD.setVisible(true);
+        
+        if(FD.getFile()==null){
+            return;
+        }
+
+        String sFile = FD.getFile();
+        if(!sFile.endsWith(".txt") && !sFile.endsWith(".csv")){
+            JOptionPane.showMessageDialog(this.master, "Formato de archivo inválido.");
+            return;
+        }
+
+        String sPath = FD.getDirectory()+sFile;
+        try {
+            ArrayList<ArrayList<String>> sVLSM = ManejadorTexto.readFile(sPath);
+            tfInitialIP.setText(sVLSM.get(0).get(0)); tfInitialIP.setForeground(UIStyle.cText);
+            tfInitialMask.setText(sVLSM.get(0).get(1)); tfInitialMask.setForeground(UIStyle.cText);
+            panelInputCenter.removeAll(); JSubnets.clear(); sVLSM.remove(0);
+            for(ArrayList<String> sSubRed: sVLSM) JSubnets.add(new JSubnet(sSubRed.get(0), sSubRed.get(1)));
+            updatePanelJSB();
+        } catch (IOException IOe) {
+            JOptionPane.showMessageDialog(this.master,"Archivo inválido","ERROR",JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     //region Events
     @Override
     public void actionPerformed(ActionEvent ae){
-
-        for (int i=0; i<JSubRedes.size(); i++) {
-            if (ae.getSource() == JSubRedes.get(i).bErase) {
-                JSubRedes.remove(i); 
-                updatePanelJSB();
-            }
-        }
-        
-        if(ae.getSource()==bAdd){
-            JSubRedes.add(new JSubRed("",""));
-            updatePanelJSB();
-        }
-
-        if(ae.getSource()==bGenerate){
-            Errores.clear();
-
-            String sIPInicial = tfInitialIP.getText().trim();
-            if (tfInitialIP.getForeground()==UIStyle.cTextUnfocused) sIPInicial = "";
-
-            String sMascaraInicial = tfInitialMask.getText().trim();
-            if (tfInitialMask.getForeground()==UIStyle.cTextUnfocused) sMascaraInicial = "";
-
-            VLSM myVLSM = new VLSM(sIPInicial, sMascaraInicial, JSubRedes);
-            System.out.println(myVLSM);
-            if(Errores.size()!=0){
-                JOptionPane.showMessageDialog(this.master,Errores.get(0),"ERROR",JOptionPane.ERROR_MESSAGE);
-                dtmModel.setRowCount(0);
-                return;
-            }
-            else{
-                dtmModel.setRowCount(0);
-                for(int i=0; i<myVLSM.getSubredes().size(); i++){
-                    dtmModel.addRow(myVLSM.getSubredes().get(i).toStringTable());
-                }
-                JOptionPane.showMessageDialog(this.master,"VLSM realizado correctamente.","ÉXITO",JOptionPane.INFORMATION_MESSAGE);
-            }
-            panelOutput.revalidate();
-            panelOutput.repaint();
-        }
-
-        if(ae.getSource()==miImport){
-            FileDialog FD = new FileDialog(this.master, "Abrir Configuración VLSM", FileDialog.LOAD);
-            FD.setFile("*.txt;*.csv"); // Filtrar archivos TXT o CSV
-            FD.setVisible(true);
-            
-            if(FD.getFile()==null){
-                return;
-            }
-
-            String sFile = FD.getFile();
-            if(!sFile.endsWith(".txt") && !sFile.endsWith(".csv")){
-                JOptionPane.showMessageDialog(this.master, "Formato de archivo inválido.");
-                return;
-            }
-
-            String sPath = FD.getDirectory()+sFile;
-            try {
-                ArrayList<ArrayList<String>> sVLSM = ManejadorTexto.readFile(sPath);
-                tfInitialIP.setText(sVLSM.get(0).get(0)); tfInitialIP.setForeground(UIStyle.cText);
-                tfInitialMask.setText(sVLSM.get(0).get(1)); tfInitialMask.setForeground(UIStyle.cText);
-                panelInputCenter.removeAll(); JSubRedes.clear(); sVLSM.remove(0);
-                for(ArrayList<String> sSubRed: sVLSM) JSubRedes.add(new JSubRed(sSubRed.get(0), sSubRed.get(1)));
-                updatePanelJSB();
-            } catch (IOException IOe) {
-                JOptionPane.showMessageDialog(this.master,"Archivo inválido","ERROR",JOptionPane.ERROR_MESSAGE);
-            }
-        }
-        // if(ae.getSource()==miExport){
-        //     LocalDateTime LDT = LocalDateTime.now();
-        //     DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
-        //     String sDateTime = LDT.format(DTF);
-        //     FileDialog FD = new FileDialog(this, "Exportar Reporte VLMS PDF", FileDialog.SAVE);
-        //     FD.setFile("Reporte_VLSM_"+sDateTime+".pdf");
-        //     FD.setVisible(true);
-
-        //     if(FD.getFile()==null){
-        //         return;
-        //     }
-        // }
+        removeJSubnet(ae);
+        if(ae.getSource()==bAdd) addJSubnet("","");
+        if(ae.getSource()==bGenerate) generateVLSM();
+        if(ae.getSource()==miImport) importConfig();
     }
 
     @Override
@@ -392,5 +355,4 @@ public class Interfaz implements ActionListener,FocusListener{
             tfInitialMask.setForeground(UIStyle.cTextUnfocused);
         }
     }
-
 }

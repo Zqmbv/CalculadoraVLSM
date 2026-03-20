@@ -10,12 +10,14 @@ import javax.swing.table.*;
 import BackEnd.*;
 
 //region Class JSubnet
-class JSubnet { // Agrupar los JComponentes para cada Subred en el panel
+class JSubnet{ // Agrupar los JComponentes para cada Subred en el panel
+    public JLabel ID;
     public JTextField sbName;
     public JTextField sbHost;
     public JButton bErase;
 
     public JSubnet(String sbName, String sbHost){
+        this.ID = new JLabel();
         this.sbName = new JTextField(sbName);
         this.sbHost = new JTextField(sbHost);
         this.bErase = new JButton("X");
@@ -45,7 +47,10 @@ public class UIGeneral implements ActionListener,FocusListener{
     JScrollPane spPanelInputCenter = new JScrollPane(panelInputCenter);
 
     JLabel lPrefixSymbol = new JLabel("/");
-    JLabel lUser = new JLabel("By Mauro 2026");
+    JLabel lUser = new JLabel("By Zqmbv 2026");
+    JLabel lID = new JLabel("ID");
+    JLabel lNombre = new JLabel("Nombre");
+    JLabel lHost = new JLabel("Host");
 
     JButton bAdd = new JButton("AGREGAR SUBRED");
     JButton bGenerate = new JButton("GENERAR");
@@ -63,7 +68,7 @@ public class UIGeneral implements ActionListener,FocusListener{
     Dimension dimSubRed = new Dimension(175, 20);
     Dimension dimHost = new Dimension(85, 20);
     Dimension dimErase = new Dimension(45, 20);
-    Dimension dimLabelNum = new Dimension(25, 20);
+    Dimension dimID = new Dimension(25, 20);
 
     JMenuBar menuBar = new JMenuBar();
     JMenu mFile = new JMenu("Archivo");
@@ -105,25 +110,38 @@ public class UIGeneral implements ActionListener,FocusListener{
 
         // PANEL INPUT 
         panelInput.setLayout(GBL);
-        GBC.gridwidth = 1;
+        
+        GBC.insets = new Insets(5, 20, 2, 5);  
+        GBC.weightx = 0;
+        GBC.gridx = 0; GBC.gridy = 1; panelInput.add(lID,GBC);
 
+        GBC.insets = new Insets(5, 22, 2, 5);  
+        GBC.weightx = 1;
+        GBC.gridx = 1; GBC.gridy = 1; panelInput.add(lNombre,GBC);
+
+        GBC.insets = new Insets(5, 22, 2, 146);  
+        GBC.weightx = 0;
+        GBC.gridx = 2; GBC.gridy = 1; panelInput.add(lHost,GBC);
+        
+        GBC.gridwidth = 3;
         GBC.insets = new Insets(10, 10, 5, 10);    
         GBC.ipady = 0;
         GBC.weightx = 1; GBC.weighty = 0;
         GBC.gridx = 0; GBC.gridy = 0; panelInput.add(panelInputNorth,GBC);
         
-        GBC.insets = new Insets(5, 10, 5, 10);  
+        GBC.insets = new Insets(2, 10, 5, 10);  
         GBC.ipady = 0;
         GBC.weighty = 1;
-        GBC.gridx = 0; GBC.gridy = 1; panelInput.add(spPanelInputCenter,GBC);
+        GBC.gridx = 0; GBC.gridy = 2; panelInput.add(spPanelInputCenter,GBC);
         
         GBC.insets = new Insets(5, 10, 10, 10);  
         GBC.ipady = 10;
         GBC.weighty = 0;
-        GBC.gridx = 0; GBC.gridy = 2; panelInput.add(panelInputSouth,GBC);
+        GBC.gridx = 0; GBC.gridy = 3; panelInput.add(panelInputSouth,GBC);
 
         // PANEL NORTE - TITULO, IP Y MASCARA INICIAL
         panelInputNorth.setLayout(GBL);
+        GBC.gridwidth = 1;
         
         GBC.fill = GridBagConstraints.BOTH;
         GBC.insets = new Insets(0, 0, 0, 0);    
@@ -171,8 +189,9 @@ public class UIGeneral implements ActionListener,FocusListener{
     public void setConfigComponents(){
         lUser.setVerticalAlignment(JLabel.BOTTOM);
         lUser.setHorizontalAlignment(JLabel.RIGHT);
+        lID.setHorizontalAlignment(JLabel.CENTER);
 
-        splitPane.setDividerLocation(425); 
+        splitPane.setDividerLocation(429); 
         splitPane.setContinuousLayout(true); 
         splitPane.setDividerSize(12); 
         splitPane.setBorder(BorderFactory.createEmptyBorder());
@@ -183,7 +202,7 @@ public class UIGeneral implements ActionListener,FocusListener{
         tbInput.setTitleJustification(TitledBorder.CENTER);
         tbOutput.setTitleJustification(TitledBorder.CENTER);
 
-        panelInput.setMinimumSize(new Dimension(425, 0));
+        panelInput.setMinimumSize(new Dimension(429, 0));
         panelOutput.setMinimumSize(new Dimension(400, 0));
 
         tfInitialIP.setBorder(BorderFactory.createCompoundBorder(tfInitialIP.getBorder(),BorderFactory.createEmptyBorder(2, 5, 2, 5)));
@@ -217,6 +236,7 @@ public class UIGeneral implements ActionListener,FocusListener{
         panelInputCenter.removeAll();
         for(int i=0; i<JSubnets.size(); i++){
             JSubnet currentJSB = JSubnets.get(i);
+            currentJSB.ID.setText(""+(i+1)+"");
 
             // Position
             GBC.fill = GridBagConstraints.HORIZONTAL; GBC.anchor = GridBagConstraints.CENTER;
@@ -227,18 +247,24 @@ public class UIGeneral implements ActionListener,FocusListener{
             if(i==0) top = 10;
             else top = 5;
             
-            GBC.insets = new Insets(top, 10, 5, 5);
-            GBC.gridx = 0; GBC.gridy = i; GBC.weightx = 1; panelInputCenter.add(currentJSB.sbName,GBC);
+            GBC.insets = new Insets(top, 5, 5, 0);
+            GBC.gridx = 0; GBC.gridy = i; GBC.weightx = 0; panelInputCenter.add(currentJSB.ID,GBC);
 
             GBC.insets = new Insets(top, 5, 5, 5);
-            GBC.gridx = 1; GBC.gridy = i; GBC.weightx = 0; panelInputCenter.add(currentJSB.sbHost,GBC);
+            GBC.gridx = 1; GBC.gridy = i; GBC.weightx = 1; panelInputCenter.add(currentJSB.sbName,GBC);
+            
+            GBC.insets = new Insets(top, 5, 5, 5);
+            GBC.gridx = 2; GBC.gridy = i; GBC.weightx = 0; panelInputCenter.add(currentJSB.sbHost,GBC);
             
             GBC.insets = new Insets(top, 5, 5, 10);
-            GBC.gridx = 2; GBC.gridy = i; GBC.weightx = 0; panelInputCenter.add(currentJSB.bErase,GBC);
+            GBC.gridx = 3; GBC.gridy = i; GBC.weightx = 0; panelInputCenter.add(currentJSB.bErase,GBC);
 
             UIStyle.setStyleJSubRed(currentJSB);
 
             // ConfigComponent
+            currentJSB.ID.setHorizontalAlignment(JLabel.CENTER);
+            currentJSB.ID.setPreferredSize(dimID);
+
             currentJSB.sbName.setPreferredSize(dimSubRed);
             currentJSB.sbName.setBorder(BorderFactory.createCompoundBorder(currentJSB.sbName.getBorder(),BorderFactory.createEmptyBorder(2, 5, 2, 5)));
         
@@ -251,7 +277,7 @@ public class UIGeneral implements ActionListener,FocusListener{
         
         // PARA QUE LOS JSUBNETS SE MANTENGAN PEGADOS EN EL NORTE DEL PANEL
         GBC.weightx = 1; GBC.weighty = 1; 
-        GBC.gridwidth = 3;
+        GBC.gridwidth = 4;
         GBC.gridx = 0; GBC.gridy = 999; panelInputCenter.add(new JLabel(""), GBC); 
         
         panelInputCenter.revalidate();
@@ -316,6 +342,7 @@ public class UIGeneral implements ActionListener,FocusListener{
             ArrayList<ArrayList<String>> sVLSM = ManejadorTexto.readFile(sPath);
             tfInitialIP.setText(sVLSM.get(0).get(0)); tfInitialIP.setForeground(UIStyle.cText);
             tfInitialMask.setText(sVLSM.get(0).get(1)); tfInitialMask.setForeground(UIStyle.cText);
+
             panelInputCenter.removeAll(); JSubnets.clear(); sVLSM.remove(0);
             for(ArrayList<String> sSubRed: sVLSM) JSubnets.add(new JSubnet(sSubRed.get(0), sSubRed.get(1)));
             updatePanelJSB();

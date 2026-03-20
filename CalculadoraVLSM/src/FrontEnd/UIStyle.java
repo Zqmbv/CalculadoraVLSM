@@ -53,13 +53,17 @@ public class UIStyle implements ChangeListener{
         });
         
         JPanel lCorner = new JPanel();
-        lCorner.setBackground(cFrameBackground);
+        setPanelStyle(lCorner,cFrameBackground,true);
         UI.spTable.setCorner(JScrollPane.UPPER_RIGHT_CORNER,lCorner);
         
         UI.tbInput.setTitleColor(cSubTitle);
         UI.tbOutput.setTitleColor(cSubTitle);
 
-        UI.lPrefixSymbol.setForeground(cSubTitle);
+        setLabelStyle(UI.lPrefixSymbol, cSubTitle, cSubTitle, false, fSubTitle);
+        setLabelStyle(UI.lID, cSubTitle, cSubTitle, false, fSubTitle);
+        setLabelStyle(UI.lNombre, cSubTitle, cSubTitle, false, fSubTitle);
+        setLabelStyle(UI.lHost, cSubTitle, cSubTitle, false, fSubTitle);
+        setLabelStyle(UI.lUser, cSubTitle, cSubTitle, false, fSubTitle);
         
         setPanelStyle(UI.panelInput,cPanelBackground,true);
         setPanelStyle(UI.panelOutput,cPanelBackground,true);
@@ -104,8 +108,6 @@ public class UIStyle implements ChangeListener{
 
     //region Font
     public void setFont(){
-        UI.lPrefixSymbol.setFont(fSubTitle);
-
         UI.tbInput.setTitleFont(fPanelTitle);
         UI.tbOutput.setTitleFont(fPanelTitle);
 
@@ -114,6 +116,14 @@ public class UIStyle implements ChangeListener{
         
         UIManager.put("Button.font",fSubTitle);
         UIManager.put("OptionPane.messageFont",fText);
+    }
+
+    //region JLabel
+    public static void setLabelStyle(JLabel JL, Color Foreground, Color Background ,Boolean Opaque, Font font){
+        JL.setForeground(Foreground);
+        JL.setBackground(Background);
+        JL.setOpaque(Opaque);
+        JL.setFont(font);
     }
 
     //region JMenu/item/uBar
@@ -189,6 +199,7 @@ public class UIStyle implements ChangeListener{
 
     //region JSubnet
     public static void setStyleJSubRed(JSubnet JSR){
+        setLabelStyle(JSR.ID,cSubTitle,cPanelBackground,false,fSubTitle);
         setTextFieldStyle(JSR.sbName,cText,cBorder,cTextFieldBackground,cText,fText);
         setTextFieldStyle(JSR.sbHost,cText,cBorder,cTextFieldBackground,cText,fText);
         setButtonStyle(JSR.bErase,cText,cEraseBackground,null,false,false,true,fSubTitle,null);

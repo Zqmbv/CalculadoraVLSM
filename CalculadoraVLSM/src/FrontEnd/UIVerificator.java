@@ -6,7 +6,7 @@ import javax.swing.JTextField;
 import BackEnd.Subnet;
 
 public class UIVerificator {
-    static final int MAX_NAME_SUBNET_LENGTH = 32;
+    static final int MAX_SUBNET_NAME_LENGTH = 32;
 
     //region IP
     public static int[] getInitialIP(JTextField tfInitialIP){
@@ -24,12 +24,12 @@ public class UIVerificator {
         int IP[] = new int[4];
         for(int i=0; i<IP.length; i++){
             try {
-                int oct = Integer.parseInt(stringIP[i]);
-                if (oct<0||oct>255){
+                int octect = Integer.parseInt(stringIP[i]);
+                if (octect<0||octect>255){
                     UIGeneral.errorMessages.add("Los octetos deben estar conformados de números enteros entre 0 y 255 cada uno.");
                     return null;
                 }
-                IP[i] = oct;
+                IP[i] = octect;
             } catch (Exception e) {
                 UIGeneral.errorMessages.add("La IP es inválida");
                 return null;
@@ -39,47 +39,46 @@ public class UIVerificator {
     } 
 
     //region Mask
-    public static int getInitialMask(JTextField input){
-        if(input.getText().trim().equals("") || input.getForeground()==UIStyle.cTextUnfocused){
+    public static int getInitialMask(JTextField tfInitialMask){
+        if(tfInitialMask.getText().trim().equals("") || tfInitialMask.getForeground()==UIStyle.cTextUnfocused){
             UIGeneral.errorMessages.add("La máscara inicial (prefijo) está vacía.");
             return -1;
         }
 
-        int prefijo;
+        int prefix;
         try {
-            prefijo = Integer.parseInt(input.getText().trim());
-            if(prefijo<0||prefijo>32){
-                UIGeneral.errorMessages.add("La máscara inicial (prefijo) debe ser entre 0 y 32.");
+            prefix = Integer.parseInt(tfInitialMask.getText().trim());
+            if(prefix<0||prefix>32){
+                UIGeneral.errorMessages.add("La máscara inicial (prefix) debe ser entre 0 y 32.");
                 return -1;
             }
         } catch (Exception e) {
-            UIGeneral.errorMessages.add("La máscara inicial (prefijo) debe ser un entero.");
+            UIGeneral.errorMessages.add("La máscara inicial (prefix) debe ser un entero.");
             return -1;
         }
-        return prefijo;
+        return prefix;
     }
 
     //region Subnet
     public static ArrayList<Subnet> getSubnets(ArrayList<JSubnet> JSubnets){
-        ArrayList<Subnet> subnets = new ArrayList<>();
-
         if(JSubnets.size()==0){
             UIGeneral.errorMessages.add("Debe agregar una subred.");
             return null;
         } 
-
+        
+        ArrayList<Subnet> subnets = new ArrayList<>();
         String sbName, sbNameTemp; 
         for(int i=0; i<JSubnets.size(); i++){
             sbName = JSubnets.get(i).sbName.getText().trim();
-            if(sbName.length()>MAX_NAME_SUBNET_LENGTH){
+            if(sbName.length()>MAX_SUBNET_NAME_LENGTH){
                 UIGeneral.errorMessages.add("El nombre de la subred es de máximo 32 carácteres.");
                 return null;
             }
-
             if(sbName.equals("")) {
                 UIGeneral.errorMessages.add("La subred ("+(i+1)+") no tiene nombre.");
                 return null;
             }
+            
             for(int j=0; j<JSubnets.size(); j++){
                 sbNameTemp = JSubnets.get(j).sbName.getText().trim();
                 if(i==j) continue;

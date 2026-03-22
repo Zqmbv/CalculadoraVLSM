@@ -19,8 +19,8 @@ public class VLSM {
         return subnets;
     }
 
-    public static int[] getOctetoCritico(Subnet SubRedes){
-        int octetoCantidad[] = {3,SubRedes.getAsignado()};
+    public static long[] getOctetoCritico(Subnet SubRedes){
+        long octetoCantidad[] = {3,SubRedes.getHostAvailable()};
         while(octetoCantidad[1]>=256){
             octetoCantidad[1] /= 256;
             octetoCantidad[0]--;
@@ -29,26 +29,25 @@ public class VLSM {
     }
 
     public void ajustarIPPrincipal(){
-        int octetoCritico[] = getOctetoCritico(this.subnets.get(0));
-        int division = (int) this.initialIP[octetoCritico[0]] / octetoCritico[1];
-        if(division != this.initialIP[octetoCritico[0]]){
-            this.initialIP[octetoCritico[0]] = division*octetoCritico[1];
-            for(int oct=octetoCritico[0]+1; oct<4; oct++){
+        long octetoCritico[] = getOctetoCritico(this.subnets.get(0));
+        int division = (int) (this.initialIP[(int) octetoCritico[0]] / octetoCritico[1]);
+        if(division != this.initialIP[(int) octetoCritico[0]]){
+            this.initialIP[(int) octetoCritico[0]] = division*((int)octetoCritico[1]);
+            for(int oct=(int)octetoCritico[0]+1; oct<4; oct++){
                 this.initialIP[oct] = 0;
             }
         }
     }
 
     public static int[] saltosIP(int[] ip, long num){
-        int newIP[] = ip.clone();
-        int salto[] = new int[4];
+        int newIP[] = ip.clone(), salto[] = new int[4];
         double temp = num * 1.0 / Math.pow(256,3);
-        for(int i=0; i<4; i++){
+        for(int i=0; i<salto.length; i++){
             salto[i] = (int) temp;
             temp -= (int) temp;
             temp *= 256.0;
         }
-        for(int i=3; i>=0; i--){
+        for(int i=salto.length-1; i>=0; i--){
             newIP[i] += salto[i];
             if(newIP[i]>=256 && i!=0){
                 newIP[i] %= 256;
@@ -59,6 +58,7 @@ public class VLSM {
                 newIP[i-1]--;
             }
         }
+        if(newIP[0]>=256){return null;}
         return newIP;
     }
 
@@ -73,12 +73,12 @@ public class VLSM {
             else{
                 Subnet subredAnterior = this.subnets.get(i-1);
                 newDirIP = subredAnterior.getDireccionRed().clone();
-                subredActual.setDireccionRed(saltosIP(newDirIP,subredAnterior.getAsignado()));
+                subredActual.setDireccionRed(saltosIP(newDirIP,subredAnterior.getHostAvailable()));
                 newDirIP = subredActual.getDireccionRed().clone();
             }
             subredActual.setPrimeraUtil(saltosIP(newDirIP, 1));
-            subredActual.setUltimaUtil(saltosIP(newDirIP,subredActual.getAsignado()-2));
-            subredActual.setBroadcast(saltosIP(newDirIP,subredActual.getAsignado()-1));
+            subredActual.setUltimaUtil(saltosIP(newDirIP,subredActual.getHostAvailable()-2));
+            subredActual.setBroadcast(saltosIP(newDirIP,subredActual.getHostAvailable()-1));
         }
     }
 
@@ -116,6 +116,5 @@ public class VLSM {
                 "+----------------------------------+------------+------------+----+-----------------+------------------+-----------------+-----------------+-----------------+-----------------+\n"+
                 subredToString()+
                 "+----------------------------------+------------+------------+----+-----------------+------------------+-----------------+-----------------+-----------------+-----------------+\n";
-
     }
 }

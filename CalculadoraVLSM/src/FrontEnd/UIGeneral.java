@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.*;
 import BackEnd.*;
@@ -13,13 +14,13 @@ import BackEnd.*;
 class JSubnet{ // Agrupar los JComponentes para cada Subred en el panel
     public JLabel ID;
     public JTextField sbName;
-    public JTextField sbHost;
+    public JSpinner sbHost;
     public JButton bErase;
 
-    public JSubnet(String sbName, String sbHost){
+    public JSubnet(String sbName, long sbHost){
         this.ID = new JLabel();
         this.sbName = new JTextField(sbName);
-        this.sbHost = new JTextField(sbHost);
+        this.sbHost = new JSpinner(new SpinnerNumberModel(sbHost, 0L, 4294967296L, 1L));
         this.bErase = new JButton("X");
     }
 }
@@ -36,7 +37,11 @@ public class UIGeneral implements ActionListener,FocusListener{
 
     TitledBorder tbInput = new TitledBorder("  DATOS  ");
     TitledBorder tbOutput = new TitledBorder("  RESULTADO  ");
-    
+
+    Border bfline = BorderFactory.createLineBorder(UIStyle.cBorder, 1);
+    Border bfEmpty = BorderFactory.createEmptyBorder(2, 4, 2, 4);
+    Border bfFinal = BorderFactory.createCompoundBorder(bfline,bfEmpty);
+
     JPanel panelInput = new JPanel();
     JPanel panelInputNorth = new JPanel();
     JPanel panelInputCenter = new JPanel(); 
@@ -66,14 +71,14 @@ public class UIGeneral implements ActionListener,FocusListener{
     JTextField tfInitialMask = new JTextField(defaultInformation[1]);
 
     Dimension dimSubRed = new Dimension(175, 20);
-    Dimension dimHost = new Dimension(85, 20);
-    Dimension dimErase = new Dimension(45, 20);
+    Dimension dimHost = new Dimension(95, 20);
+    Dimension dimErase = new Dimension(35, 20);
     Dimension dimID = new Dimension(25, 20);
 
     JMenuBar menuBar = new JMenuBar();
     JMenu mFile = new JMenu("Archivo");
     JMenuItem miImport = new JMenuItem("Importar Configuración");
-    JMenuItem miExport = new JMenuItem("Exportar Cálculo");
+    JMenuItem miExport = new JMenuItem("Exportar Resultado");
 
     //region Constructor
     public UIGeneral(JFrame frame){
@@ -205,12 +210,14 @@ public class UIGeneral implements ActionListener,FocusListener{
         panelInput.setMinimumSize(new Dimension(429, 0));
         panelOutput.setMinimumSize(new Dimension(400, 0));
 
-        tfInitialIP.setBorder(BorderFactory.createCompoundBorder(tfInitialIP.getBorder(),BorderFactory.createEmptyBorder(2, 5, 2, 5)));
-        tfInitialMask.setBorder(BorderFactory.createCompoundBorder(tfInitialMask.getBorder(),BorderFactory.createEmptyBorder(2, 5, 2, 5)));
+        tfInitialIP.setBorder(bfFinal);
+        tfInitialMask.setBorder(bfFinal);
 
         lPrefixSymbol.setHorizontalAlignment(JLabel.CENTER);
         spPanelInputCenter.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         spPanelInputCenter.getVerticalScrollBar().setUnitIncrement(16);
+
+        spTable.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         spTable.getVerticalScrollBar().setUnitIncrement(16);
 
         jtTable.setFillsViewportHeight(true);
@@ -234,6 +241,7 @@ public class UIGeneral implements ActionListener,FocusListener{
     //region Functions
     public void updatePanelJSB(){
         panelInputCenter.removeAll();
+
         for(int i=0; i<JSubnets.size(); i++){
             JSubnet currentJSB = JSubnets.get(i);
             currentJSB.ID.setText(""+(i+1)+"");
@@ -244,8 +252,7 @@ public class UIGeneral implements ActionListener,FocusListener{
             GBC.ipadx = 0; GBC.ipady = 8; GBC.weighty = 0;
 
             int top;
-            if(i==0) top = 10;
-            else top = 5;
+            if(i==0) top = 10; else top = 5;
             
             GBC.insets = new Insets(top, 5, 5, 0);
             GBC.gridx = 0; GBC.gridy = i; GBC.weightx = 0; panelInputCenter.add(currentJSB.ID,GBC);
@@ -266,10 +273,11 @@ public class UIGeneral implements ActionListener,FocusListener{
             currentJSB.ID.setPreferredSize(dimID);
 
             currentJSB.sbName.setPreferredSize(dimSubRed);
-            currentJSB.sbName.setBorder(BorderFactory.createCompoundBorder(currentJSB.sbName.getBorder(),BorderFactory.createEmptyBorder(2, 5, 2, 5)));
-        
+            currentJSB.sbName.setBorder(bfFinal);
+
+            ((JSpinner.DefaultEditor)currentJSB.sbHost.getEditor()).getTextField().setHorizontalAlignment(JTextField.LEFT);
             currentJSB.sbHost.setPreferredSize(dimHost);
-            currentJSB.sbHost.setBorder(BorderFactory.createCompoundBorder(currentJSB.sbHost.getBorder(),BorderFactory.createEmptyBorder(2, 5, 2, 5)));
+            currentJSB.sbHost.setBorder(bfFinal);
             
             currentJSB.bErase.setPreferredSize(dimErase);
             currentJSB.bErase.addActionListener(this);
@@ -293,7 +301,7 @@ public class UIGeneral implements ActionListener,FocusListener{
         }
     }
 
-    public void addJSubnet(String sbName, String sbHost){
+    public void addJSubnet(String sbName, int sbHost){
         JSubnets.add(new JSubnet(sbName,sbHost));
         updatePanelJSB();
     }
@@ -344,7 +352,7 @@ public class UIGeneral implements ActionListener,FocusListener{
             tfInitialMask.setText(sVLSM.get(0).get(1)); tfInitialMask.setForeground(UIStyle.cText);
 
             panelInputCenter.removeAll(); JSubnets.clear(); sVLSM.remove(0);
-            for(ArrayList<String> sSubRed: sVLSM) JSubnets.add(new JSubnet(sSubRed.get(0), sSubRed.get(1)));
+            for(ArrayList<String> sSubRed: sVLSM) JSubnets.add(new JSubnet(sSubRed.get(0),Long.parseLong(sSubRed.get(1))));
             updatePanelJSB();
         } catch (IOException IOe) {
             JOptionPane.showMessageDialog(this.master,"Archivo inválido","ERROR",JOptionPane.ERROR_MESSAGE);
@@ -355,7 +363,7 @@ public class UIGeneral implements ActionListener,FocusListener{
     @Override
     public void actionPerformed(ActionEvent ae){
         removeJSubnet(ae);
-        if(ae.getSource()==bAdd) addJSubnet("","");
+        if(ae.getSource()==bAdd) addJSubnet("",0);
         if(ae.getSource()==bGenerate) generateVLSM();
         if(ae.getSource()==miImport) importConfig();
     }

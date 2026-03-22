@@ -3,6 +3,7 @@ package calculadoravlsm;
 import java.awt.Dimension;
 import java.io.IOException;
 import javax.swing.JFrame;
+
 import FrontEnd.UIGeneral;
 
 public class Main{
@@ -18,5 +19,4 @@ public class Main{
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
     }
-    
 }

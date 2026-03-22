@@ -178,6 +178,31 @@ public class UIStyle implements ChangeListener{
         JTF.setFont(Font);
     }
 
+    //region JSpinner
+    public static void setSpinnerStyle(JSpinner JS, Color Foreground, Color Border, Color BackGround1, Color BackGround2, Color Caret, Font font){
+        JSpinner.NumberEditor NE = new JSpinner.NumberEditor(JS, "#");
+        JS.setEditor(NE);
+        JS.setBorder(BorderFactory.createLineBorder(Border,1));
+        
+        JTextField JTF = NE.getTextField();
+        JTF.setOpaque(true); 
+        JTF.setForeground(Foreground);
+        JTF.setBackground(BackGround1);
+        JTF.setCaretColor(Caret);
+        JTF.setFont(font);
+
+        for (Component C: JS.getComponents()) {
+            if (C instanceof JButton) {
+                JButton JB = (JButton) C;
+                JB.setBackground(BackGround2);
+                JB.setOpaque(true);
+                JB.setBorder(BorderFactory.createLineBorder(Border, 1));
+            }
+        }
+
+        JS.setBackground(BackGround1);
+    }
+
     // region JButton
     public static void setButtonStyle(JButton JB, Color Foreground, Color Background, Color Border, Boolean FocusPainted, Boolean ContentAreaFilled, Boolean Opaque, Font Font, ChangeListener CL){
         JB.setForeground(Foreground);
@@ -201,7 +226,7 @@ public class UIStyle implements ChangeListener{
     public static void setStyleJSubRed(JSubnet JSR){
         setLabelStyle(JSR.ID,cSubTitle,cPanelBackground,false,fSubTitle);
         setTextFieldStyle(JSR.sbName,cText,cBorder,cTextFieldBackground,cText,fText);
-        setTextFieldStyle(JSR.sbHost,cText,cBorder,cTextFieldBackground,cText,fText);
+        setSpinnerStyle(JSR.sbHost,cText,cBorder,cTextFieldBackground,cFrameBackground,cText,fText);
         setButtonStyle(JSR.bErase,cText,cEraseBackground,null,false,false,true,fSubTitle,null);
         JSR.bErase.addChangeListener(e -> {
             ButtonModel model = JSR.bErase.getModel();

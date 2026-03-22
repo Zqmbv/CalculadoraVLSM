@@ -75,6 +75,7 @@ public class UIVerificator {
         
         ArrayList<Subnet> subnets = new ArrayList<>();
         String sbName, sbNameTemp; 
+        long sumTotalHost = 0L;
         for(int i=0; i<JSubnets.size(); i++){
 
             sbName = JSubnets.get(i).sbName.getText().trim();
@@ -100,12 +101,17 @@ public class UIVerificator {
             long sbHost;
             try {
                 sbHost = ((Number) JSubnets.get(i).sbHost.getValue()).longValue();
+                sumTotalHost += sbHost+2;
                 if(sbHost<=0) {
                     UIGeneral.errorMessages.add("La subred ["+(i+1)+"] "+sbName+" debe tener mínimo 1 host.");
                     return null;
                 } 
                 if(sbHost>16777214L) {
                     UIGeneral.errorMessages.add("La subred ["+(i+1)+"] "+sbName+" debe tener máximo 16777214 host.");
+                    return null;
+                } 
+                if(sumTotalHost>4294967296L) {
+                    UIGeneral.errorMessages.add("Los hosts requeridos exceden del tamaño total de la topología.");
                     return null;
                 } 
             } catch (Exception e) {

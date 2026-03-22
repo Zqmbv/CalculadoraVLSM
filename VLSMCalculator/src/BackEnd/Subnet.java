@@ -4,7 +4,7 @@ public class Subnet {
     private String name;
     private long hostNeeded;
     private int exponent;
-    private long hostAvailable;
+    private long availableHosts;
     private int CIDR;
     private String[] binMask;
     private int[] decMask;
@@ -18,7 +18,7 @@ public class Subnet {
         this.name = name;
         this.hostNeeded = hostNeeded;
         this.exponent = getExponent(this.hostNeeded);
-        this.hostAvailable = getHostAvailable(this.hostNeeded);
+        this.availableHosts = getAvailableHosts(this.hostNeeded);
         this.CIDR = getCIDR(this.exponent);
         this.binMask = getBinMask(this.exponent);
         this.decMask = getDecMask(this.binMask);
@@ -29,7 +29,7 @@ public class Subnet {
         return (int) (Math.ceil(Math.log(hostNeeded+2) / Math.log(2)));
     }
 
-    public static long getHostAvailable(long hostNeeded){
+    public static long getAvailableHosts(long hostNeeded){
         return (long) Math.pow(2,getExponent(hostNeeded));
     }
     
@@ -66,8 +66,8 @@ public class Subnet {
         return this.hostNeeded;
     }
     
-    public long getHostAvailable(){
-        return this.hostAvailable;
+    public long getAvailableHosts(){
+        return this.availableHosts;
     }
 
     public int[] getDecMask(){
@@ -97,7 +97,7 @@ public class Subnet {
     public String[] toStringTable(){
         return new String[] {this.name,
             String.valueOf(this.hostNeeded),
-            String.valueOf(this.hostAvailable),
+            String.valueOf(this.availableHosts),
             String.valueOf(this.CIDR),
             VLSM.arrayToString(this.decMask),
             VLSM.arrayToString(this.wildcardMask),

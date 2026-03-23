@@ -9,7 +9,6 @@ import javax.swing.plaf.basic.*;
 
 public class UIStyle implements ChangeListener{
 
-    //region Attributes
     UIGeneral UI;
     static final Color cTextUnfocused = new Color(180,180,180);
     static final Color cText = new Color(255,255,255);
@@ -32,7 +31,7 @@ public class UIStyle implements ChangeListener{
     static final Font fTableText = new Font(nameFont,Font.PLAIN,11);
     static final Font fTableHeader = new Font(nameFont,Font.BOLD,11);
 
-    //region General
+    //region Constructor
     public UIStyle(UIGeneral UI){
         this.UI = UI;
         UI.master.getContentPane().setBackground(cFrameBackground);
@@ -77,6 +76,7 @@ public class UIStyle implements ChangeListener{
         setTextFieldStyle(UI.tfInitialIP,cTextUnfocused,cBorder,cTextFieldBackground,cText,fText);
         setTextFieldStyle(UI.tfInitialMask,cTextUnfocused,cBorder,cTextFieldBackground,cText,fText);
 
+        setButtonStyle(UI.bSaveVLSM,cText,cBotonBackground,null,false,false,true,fSubTitle,this);
         setButtonStyle(UI.bGenerate,cText,cBotonBackground,null,false,false,true,fSubTitle,this);
         setButtonStyle(UI.bAdd,cText,cBotonBackground,null,false,false,true,fSubTitle,this);
         
@@ -91,7 +91,8 @@ public class UIStyle implements ChangeListener{
         UI.jtTable.setShowHorizontalLines(true);
         UI.jtTable.setGridColor(cScrollPaneBorder);
 
-        setComponentStyle(UI.miImport,cSubTitle,cPanelBackground,true,BorderFactory.createEmptyBorder(4, 5, 4, 5));
+        setComponentStyle(UI.miImportConfig,cSubTitle,cPanelBackground,true,BorderFactory.createEmptyBorder(4, 5, 4, 5));
+        setComponentStyle(UI.miExportConfig,cSubTitle,cPanelBackground,true,BorderFactory.createEmptyBorder(4, 5, 4, 5));
         setComponentStyle(UI.mFile,cSubTitle,cPanelBackground,false,BorderFactory.createEmptyBorder(4, 8, 4, 8));
         setComponentStyle(UI.menuBar,cFrameBackground,cFrameBackground,true,BorderFactory.createLineBorder(cBorder, 1));
 
@@ -118,7 +119,8 @@ public class UIStyle implements ChangeListener{
         UIManager.put("OptionPane.messageFont",fText);
     }
 
-    //region JLabel
+    //region Auxiliary
+    // JLABEL
     public static void setLabelStyle(JLabel JL, Color Foreground, Color Background ,Boolean Opaque, Font font){
         JL.setForeground(Foreground);
         JL.setBackground(Background);
@@ -126,7 +128,7 @@ public class UIStyle implements ChangeListener{
         JL.setFont(font);
     }
 
-    //region JMenu/item/uBar
+    // JMENU / JITEM / JMENUBAR
     public void setComponentStyle(JComponent JC, Color Foreground, Color Background ,Boolean Opaque, Border BF){
         JC.setForeground(Foreground);
         JC.setBackground(Background);
@@ -134,13 +136,13 @@ public class UIStyle implements ChangeListener{
         JC.setOpaque(Opaque); 
     }
 
-    //region JPanel
+    // JPANEL
     public void setPanelStyle(JPanel JP, Color Background, Boolean Opaque){
         JP.setBackground(Background);
         JP.setOpaque(Opaque);
     }
 
-    //region JScrollPane
+    // JSCROLLPANEL
     public void setScrollPaneStyle(JScrollPane JSP, Color ThumbColor, Color TrackColor){
         JSP.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
             @Override
@@ -169,7 +171,7 @@ public class UIStyle implements ChangeListener{
         JSP.setBorder(BorderFactory.createLineBorder(cScrollPaneBorder));
     }
 
-    //region JTextField
+    // JTEXTFIELD
     public static void setTextFieldStyle(JTextField JTF, Color Foreground, Color Border, Color Background, Color Caret, Font Font){
         JTF.setForeground(Foreground);
         JTF.setBorder(BorderFactory.createLineBorder(Border));
@@ -178,7 +180,7 @@ public class UIStyle implements ChangeListener{
         JTF.setFont(Font);
     }
 
-    //region JSpinner
+    // JSPINNER
     public static void setSpinnerStyle(JSpinner JS, Color Foreground, Color Border, Color BackGround1, Color BackGround2, Color Caret, Font font){
         JSpinner.NumberEditor NE = new JSpinner.NumberEditor(JS, "#");
         JS.setEditor(NE);
@@ -203,7 +205,7 @@ public class UIStyle implements ChangeListener{
         JS.setBackground(BackGround1);
     }
 
-    // region JButton
+    // JBUTTON
     public static void setButtonStyle(JButton JB, Color Foreground, Color Background, Color Border, Boolean FocusPainted, Boolean ContentAreaFilled, Boolean Opaque, Font Font, ChangeListener CL){
         JB.setForeground(Foreground);
         JB.setBackground(Background);
@@ -222,8 +224,8 @@ public class UIStyle implements ChangeListener{
         else JB.setBackground(normalBackground);
     }
 
-    //region JSubnet
-    public static void setStyleJSubRed(JSubnet JSR){
+    // JSUBNET
+    public static void setStyleJSubnet(JSubnet JSR){
         setLabelStyle(JSR.ID,cSubTitle,cPanelBackground,false,fSubTitle);
         setTextFieldStyle(JSR.sbName,cText,cBorder,cTextFieldBackground,cText,fText);
         setSpinnerStyle(JSR.sbHost,cText,cBorder,cTextFieldBackground,cFrameBackground,cText,fText);
@@ -235,6 +237,7 @@ public class UIStyle implements ChangeListener{
         });
     }
 
+    //region Events
     @Override
     public void stateChanged(ChangeEvent ce) {
         if(ce.getSource()==UI.bAdd){
@@ -242,6 +245,9 @@ public class UIStyle implements ChangeListener{
         }
         if(ce.getSource()==UI.bGenerate){
             setButtonPressedStyle(UI.bGenerate,cBotonBackground,cPressedButtonBackground);
+        }
+        if(ce.getSource()==UI.bSaveVLSM){
+            setButtonPressedStyle(UI.bSaveVLSM,cBotonBackground,cPressedButtonBackground);
         }
     }
 }

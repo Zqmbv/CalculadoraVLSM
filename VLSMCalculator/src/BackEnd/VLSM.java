@@ -32,12 +32,14 @@ public class VLSM {
 
     public void adjustMainIP(){
         long criticalData[] = getCriticalOctect(this.subnets.get(0));
-        int division = (int) (this.initialIP[(int) criticalData[0]] / criticalData[1]);
-        if(division != this.initialIP[(int) criticalData[0]]){
-            this.initialIP[(int) criticalData[0]] = division*((int)criticalData[1]);
-            for(int oct=(int)criticalData[0]+1; oct<4; oct++){
-                this.initialIP[oct] = 0;
-            }
+        int criticalOct = (int) criticalData[0];
+        int value = (int) criticalData[1];
+
+        int intDiv = (int) this.initialIP[criticalOct] / value; // MATH.FLOOR
+        this.initialIP[criticalOct] = intDiv*(value);
+
+        for(int oct=(int)criticalData[0]+1; oct<4; oct++){
+            this.initialIP[oct] = 0;
         }
     }
 

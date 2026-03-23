@@ -62,6 +62,10 @@ public class Subnet {
         return wildcard;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public long getHost(){
         return this.hostNeeded;
     }
